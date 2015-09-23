@@ -1,5 +1,5 @@
 Name:                network-bitcoin
-Version:             1.8.1
+Version:             1.8.2
 Synopsis:            An interface to bitcoind.
 Description:
     This can be used to send Bitcoins, query balances, etc.  It
@@ -52,7 +52,7 @@ Library
     aeson >= 0.8,
     bytestring >= 0.9 && < 0.11,
     cookie >= 0.4,
-    attoparsec == 0.12.*,
+    attoparsec >= 0.12,
     unordered-containers >= 0.2,
     HTTP >= 4000,
     http-types >= 0.8.5,
@@ -61,7 +61,8 @@ Library
     vector >= 0.10,
     base == 4.*,
     time >= 1.4.2,
-    http-client >= 0.4.6
+    http-client >= 0.4.6,
+    network-uri
 
 Source-repository head
   type: git
@@ -75,7 +76,7 @@ Executable network-bitcoin-tests
     aeson >= 0.8,
     bytestring >= 0.9 && < 0.11,
     cookie >= 0.4,
-    attoparsec == 0.12.*,
+    attoparsec >= 0.12,
     unordered-containers >= 0.2,
     HTTP >= 4000,
     http-types >= 0.8.5,

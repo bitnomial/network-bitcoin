@@ -45,6 +45,7 @@ module Network.Bitcoin.Wallet ( Client
                               , listTransactions
                               , listTransactions'
                               , listAccounts
+                              , importAddress
                               , SinceBlock(..)
                               , SimpleTransaction(..)
                               , TransactionCategory(..)
@@ -587,6 +588,21 @@ listAccounts :: Client
              -> IO (HM.HashMap Account BTC)
 listAccounts client mconf = 
     callApi client "listaccounts" [ tjm 1 mconf ]
+
+
+-- | Import an address
+importAddress :: Client
+              -> Address
+              -- ^ Address to import
+              -> Maybe Account
+              -- ^ Optional account, default ""
+              -> Maybe Bool
+              -- ^ Optional rescan the blockchain, default true
+              -> IO ()
+importAddress client addr macct mrescan =
+    unNil <$> callApi client "importaddress"
+        ([ tj addr ] ++ tja macct ++ tja mrescan)
+
 
 -- | Data type for detailed transactions. Rules involving 'trCategory' are 
 --   indications of the most probable value only when the transaction is 

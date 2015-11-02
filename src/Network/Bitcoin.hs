@@ -100,6 +100,7 @@ module Network.Bitcoin
     , listTransactions
     , listTransactions'
     , listAccounts
+    , importAddress
     , SinceBlock(..)
     , SimpleTransaction(..)
     , TransactionCategory(..)

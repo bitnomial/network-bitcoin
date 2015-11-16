@@ -68,10 +68,11 @@ Source-repository head
   type: git
   location: git://github.com/wowus/network-bitcoin.git
 
-Executable network-bitcoin-tests
+Test-suite network-bitcoin-tests
   hs-source-dirs: src
   ghc-options: -Wall
   main-is: Test/Main.hs
+  type: exitcode-stdio-1.0
   build-depends:
     aeson >= 0.8,
     bytestring >= 0.9 && < 0.11,

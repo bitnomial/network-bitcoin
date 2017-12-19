@@ -16,6 +16,8 @@ module Network.Bitcoin.Mining ( Client
                               , getClient
                               , getGenerate
                               , setGenerate
+                              , generate
+                              , generateToAddress
                               , getHashesPerSec
                               , MiningInfo(..)
                               , getMiningInfo
@@ -54,6 +56,41 @@ setGenerate client onOff Nothing =
     unArr <$> callApi client "setgenerate" [ tj onOff ]
 setGenerate client onOff (Just limit) =
     unArr <$> callApi client "setgenerate" [ tj onOff, tj limit ]
+
+-- | The generate RPC nearly instantly generates blocks.
+--   See https://bitcoin.org/en/developer-reference#generate for more details.
+generate :: Client
+         -> Int -- ^ The number of blocks to generate.
+                --   The RPC call will not return until all
+                --   blocks have been generated or the maxium
+                --   number of iterations has been reached
+         -> Maybe Int -- ^ The maximum number of iterations that
+                      --   are tried to create the requested number
+                      --   of blocks. Default is 1000000
+         -> IO [HexString] -- ^ An array containing the block header
+                           --   hashes of the generated blocks
+                           --   (may be empty if used with generate 0)
+generate client blocks Nothing =
+    callApi client "generate" [ tj blocks ]
+generate client blocks (Just maxTries) =
+    callApi client "generate" [ tj blocks, tj maxTries]
+
+-- | The generatetoaddress RPC mines blocks immediately to a specified address.
+--   See https://bitcoin.org/en/developer-reference#generatetoaddress for more details.
+generateToAddress :: Client
+                  -> Int -- ^ The number of blocks to generate.
+                         --   The RPC call will not return until all
+                         --   blocks have been generated or the maxium
+                         --   number of iterations has been reached
+                  -> Address -- ^ The address to send the newly generated Bitcoin to
+                  -> Maybe Int -- ^ The maximum number of iterations that
+                               --   are tried to create the requested number
+                               --   of blocks. Default is 1000000
+                  -> IO [HexString]
+generateToAddress client blocks address Nothing =
+    callApi client "generatetoaddress" [ tj blocks, tj address ]
+generateToAddress client blocks address (Just maxTries) =
+    callApi client "generatetoaddress" [ tj blocks, tj address, tj maxTries ]
 
 -- | Returns a recent hashes per second performance measurement while
 --   generating.

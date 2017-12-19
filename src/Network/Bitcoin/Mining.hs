@@ -29,10 +29,9 @@ module Network.Bitcoin.Mining ( Client
                               , submitBlock
                               ) where
 
-import Data.Aeson as A
-import Control.Applicative
-import Control.Monad
-import Network.Bitcoin.Internal
+import           Control.Monad
+import           Data.Aeson               as A
+import           Network.Bitcoin.Internal
 
 -- | Returns whether or not bitcoind is generating bitcoins.
 getGenerate :: Client -- ^ bitcoind RPC client
@@ -69,24 +68,24 @@ getHashesPerSec client = callApi client "gethashespersec" []
 data MiningInfo =
     MiningInfo {
                -- | The number of blocks in our block-chain.
-                 nBlocks :: Integer
+                 nBlocks                  :: Integer
                -- | The size of the current block we're mining.
-               , currentBlockSize :: Integer
-               , currentBlockTransaction :: Integer
+               , currentBlockSize         :: Integer
+               , currentBlockTransaction  :: Integer
                -- | How difficult mining currently is.
-               , difficulty :: Double
+               , difficulty               :: Double
                -- | Any mining errors that may have come up.
-               , miningErrors :: Text
+               , miningErrors             :: Text
                -- | Are we currently generating bitcoins?
-               , isGenerating :: Bool
+               , isGenerating             :: Bool
                -- | How many processors have we limited bitcoin mining to?
                , generationProcessorLimit :: Integer
                -- | How fast is the mining going?
-               , hashesPerSecond :: Integer
-               , pooledTransactions :: Integer
+               , hashesPerSecond          :: Integer
+               , pooledTransactions       :: Integer
                -- | Are we on the bitcoin test network (as opposed to the real
                --   thing)?
-               , miningOnTestNetwork :: Bool
+               , miningOnTestNetwork      :: Bool
                }
     deriving ( Show, Read, Ord, Eq )
 
@@ -111,9 +110,9 @@ getMiningInfo client = callApi client "getmininginfo" []
 data HashData =
     HashData { blockData :: HexString
              -- | Little-endian hash target, formatted as a hexadecimal string.
-             , hdTarget :: HexString
-             , hash1 :: HexString
-             , midstate :: HexString
+             , hdTarget  :: HexString
+             , hash1     :: HexString
+             , midstate  :: HexString
              }
     deriving ( Show, Read, Ord, Eq )
 
@@ -159,39 +158,39 @@ data CoinBaseAux = CoinBaseAux { cbFlags :: HexString
 
 instance FromJSON CoinBaseAux where
     parseJSON (Object o) = CoinBaseAux <$> o .: "flags"
-    parseJSON _ = mzero
+    parseJSON _          = mzero
 
 -- | A template for constructing a block to work on.
 --
 --   See <https://en.bitcoin.it/wiki/BIP_0022> for the full specification.
 data BlockTemplate =
-    BlockTemplate { blockVersion :: Integer
+    BlockTemplate { blockVersion          :: Integer
                   -- | Hash of current highest block.
-                  , previousBlockHash :: HexString
+                  , previousBlockHash     :: HexString
                   -- | Contents of non-coinbase transactions that should be
                   --   included in the next block.
                   , transactionsToInclude :: Vector Transaction
                   -- | Data that should be included in coinbase.
-                  , coinBaseAux :: CoinBaseAux
+                  , coinBaseAux           :: CoinBaseAux
                   -- | Maximum allowable input to coinbase transaction,
                   --   including the generation award and transaction fees.
-                  , coinBaseValue :: Integer
+                  , coinBaseValue         :: Integer
                   -- | Hash target.
-                  , btTarget :: HexString
+                  , btTarget              :: HexString
                   -- | Minimum timestamp appropriate for next block.
-                  , minTime :: Integer
+                  , minTime               :: Integer
                   -- | Range of valid nonces.
-                  , nonceRange :: HexString
+                  , nonceRange            :: HexString
                   -- | Limit of sigops in blocks.
-                  , sigopLimit :: Integer
+                  , sigopLimit            :: Integer
                   -- | Limit of block size.
-                  , sizeLimit :: Integer
+                  , sizeLimit             :: Integer
                   -- | Current timestamp.
-                  , curTime :: Integer
+                  , curTime               :: Integer
                   -- | Compressed target of the next block.
-                  , btBits :: HexString
+                  , btBits                :: HexString
                   -- | Height of the next block.
-                  , btHeight :: Integer
+                  , btHeight              :: Integer
                   }
     deriving ( Show, Read, Ord, Eq )
 
@@ -223,7 +222,7 @@ data StupidReturnValue = SRV { unStupid :: Bool }
 
 instance FromJSON StupidReturnValue where
     parseJSON Null = return $ SRV True
-    parseJSON _ = return $ SRV False
+    parseJSON _    = return $ SRV False
 
 -- | Attempts to submit a new block to the network.
 submitBlock :: Client

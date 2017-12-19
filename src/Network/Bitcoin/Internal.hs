@@ -25,16 +25,15 @@ module Network.Bitcoin.Internal ( module Network.Bitcoin.Types
                                 , BitcoinRpcResponse(..)
                                 ) where
 
-import           Control.Applicative
 import           Control.Exception
 import           Control.Monad
 import           Data.Aeson
+import qualified Data.ByteString           as BS
 import           Data.Maybe
-import           Data.Vector ( Vector )
-import qualified Data.Vector          as V
+import           Data.Text                 (Text)
+import           Data.Vector               (Vector)
+import qualified Data.Vector               as V
 import           Network.Bitcoin.Types
-import qualified Data.ByteString      as BS
-import           Data.Text ( Text )
 import           Network.HTTP.Client
 import           Network.HTTP.Types.Header
 
@@ -53,8 +52,8 @@ instance FromJSON BitcoinRpcError where
 
 -- | A response from bitcoind will contain the result of the JSON-RPC call, and
 --   an error. The error should be null if a valid response was received.
-data BitcoinRpcResponse a = BitcoinRpcResponse { btcResult  :: a
-                                               , btcError   :: BitcoinRpcError
+data BitcoinRpcResponse a = BitcoinRpcResponse { btcResult :: a
+                                               , btcError  :: BitcoinRpcError
                                                }
     deriving ( Show, Read, Ord, Eq )
 

@@ -10,8 +10,7 @@ module Network.Bitcoin.Dump ( PrivateKey
                             , dumpPrivateKey
                             ) where
 
-import Control.Applicative
-import Network.Bitcoin.Internal
+import           Network.Bitcoin.Internal
 
 -- | A textual representation of a bitcoin private key.
 type PrivateKey = Text

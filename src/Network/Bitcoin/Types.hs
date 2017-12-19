@@ -1,4 +1,5 @@
-{-# LANGUAGE OverloadedStrings, DeriveDataTypeable #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings  #-}
 {-# OPTIONS_GHC -Wall #-}
 -- | Contains the common types used through bitcoin RPC calls, that aren't
 --   specific to a single submodule.
@@ -12,11 +13,11 @@ module Network.Bitcoin.Types ( Client
                              , Address
                              ) where
 
-import Control.Exception
-import Data.Fixed
-import Data.Text ( Text )
-import Data.Typeable
+import           Control.Exception
 import qualified Data.ByteString.Lazy as BL
+import           Data.Fixed
+import           Data.Text            (Text)
+import           Data.Typeable
 
 -- | 'Client' describes authentication credentials and host info for
 -- making API requests to the Bitcoin daemon.

@@ -118,10 +118,10 @@ module Network.Bitcoin
     , isAddressValid
     ) where
 
-import Network.Bitcoin.Types
-import Network.Bitcoin.BlockChain
-import Network.Bitcoin.Dump
-import Network.Bitcoin.Mining
-import Network.Bitcoin.Net
-import Network.Bitcoin.RawTransaction
-import Network.Bitcoin.Wallet
+import           Network.Bitcoin.BlockChain
+import           Network.Bitcoin.Dump
+import           Network.Bitcoin.Mining
+import           Network.Bitcoin.Net
+import           Network.Bitcoin.RawTransaction
+import           Network.Bitcoin.Types
+import           Network.Bitcoin.Wallet

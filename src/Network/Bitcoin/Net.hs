@@ -13,10 +13,9 @@ module Network.Bitcoin.Net ( Client
                            , getPeerInfo
                            ) where
 
-import Control.Applicative
-import Control.Monad
-import Data.Aeson
-import Network.Bitcoin.Internal
+import           Control.Monad
+import           Data.Aeson
+import           Network.Bitcoin.Internal
 
 -- | Returns the number of connections to other nodes.
 getConnectionCount :: Client -> IO Integer
@@ -28,28 +27,28 @@ getConnectionCount client = callApi client "getconnectioncount" []
 --   don't know what some of these fields are for. Patches are welcome!
 data PeerInfo =
     PeerInfo { -- | The IP:port of this peer, as a string.
-               addressName :: Text
-             , services :: Text
+               addressName    :: Text
+             , services       :: Text
              -- | Relative to the first time we conected with this peer (and in
              -- milliseconds), the last time we sent this peer any data.
-             , lastSend :: Integer
+             , lastSend       :: Integer
              -- | Relative to the first time we connected with this peer
              --   (and in milliseconds), the last time we sent this peer any
              --   data.
-             , lastRecv :: Integer
-             , bytesSent :: Integer
-             , bytesRecv :: Integer
+             , lastRecv       :: Integer
+             , bytesSent      :: Integer
+             , bytesRecv      :: Integer
               -- | How long have we been connected to this peer (in
               --   milliseconds).
              , connectionTime :: Integer
              -- | The version of the Bitcion client the peer is running.
-             , peerVersion :: Integer
+             , peerVersion    :: Integer
              -- | The sub-version of the Bitcoin client the peer is running.
              , peerSubversion :: Text
-             , inbound :: Bool
+             , inbound        :: Bool
              , startingHeight :: Integer
              -- | How many times has this peer behaved badly?
-             , banScore :: Integer
+             , banScore       :: Integer
              }
     deriving ( Show, Read, Ord, Eq )
 

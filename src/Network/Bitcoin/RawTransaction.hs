@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards   #-}
 {-# OPTIONS_GHC -Wall #-}
 -- | An interface to bitcoind's available raw transaction-related RPC calls.
 --   The implementation of these functions can be found at
@@ -58,9 +58,9 @@ getRawTransaction client txid =
 data TxIn = TxCoinbase { txCoinbase :: HexString
                        }
           | TxIn { -- | This transaction's ID.
-                   txInId :: TransactionID
-                 , numOut :: Integer
-                 , scriptSig :: ScriptSig
+                   txInId     :: TransactionID
+                 , numOut     :: Integer
+                 , scriptSig  :: ScriptSig
                  -- | A transaction sequence number.
                  , txSequence :: Integer
                  }
@@ -98,7 +98,7 @@ instance FromJSON TxnOutputType where
 -- | A transaction out of an account.
 data TxOut =
     TxOut { -- | The amount of bitcoin transferred out.
-            txoutVal :: BTC
+            txoutVal     :: BTC
           -- | The public key of the account we sent the money to.
           , scriptPubKey :: ScriptPubKey
           }
@@ -122,13 +122,13 @@ data ScriptPubKey = NonStandardScriptPubKey { -- | The JSON "asm" field.
                                             , nspkHex :: HexString
                                             }
                   | StandardScriptPubKey { -- | The JSON "asm" field.
-                                           sspkAsm :: HexString
+                                           sspkAsm       :: HexString
                                          -- | The JSON "hex" field.
-                                         , sspkHex :: HexString
+                                         , sspkHex       :: HexString
                                          -- | The number of required signatures.
-                                         , requiredSigs :: Integer
+                                         , requiredSigs  :: Integer
                                          -- | The type of the transaction.
-                                         , sspkType :: TxnOutputType
+                                         , sspkType      :: TxnOutputType
                                          -- | The addresses associated with this key.
                                          , sspkAddresses :: Vector Address
                                          }
@@ -163,9 +163,9 @@ data BlockInfo = ConfirmedBlock { -- | The number of confirmations a block has.
                                   --   This will always be >= 1.
                                   confirmations :: Integer
                                 --   The JSON "time" field".
-                                , cbTime :: Integer
+                                , cbTime        :: Integer
                                 -- | The JSON "blocktime" field.
-                                , blockTime :: Integer
+                                , blockTime     :: Integer
                                 }
                | UnconfirmedBlock
                -- ^ An unconfirmed block is boring, but a possibility.
@@ -185,19 +185,19 @@ instance FromJSON BlockInfo where
 -- | The raw transaction info for a given transaction ID.
 data RawTransactionInfo =
     RawTransactionInfo { -- | The raw transaction.
-                         raw :: RawTransaction
+                         raw            :: RawTransaction
                        -- | The transaction version number.
-                       , txnVersion :: Integer
-                       , txnLockTime :: Integer
+                       , txnVersion     :: Integer
+                       , txnLockTime    :: Integer
                        -- | The vector of transactions in.
-                       , vin :: Vector TxIn
+                       , vin            :: Vector TxIn
                        -- | The vector of transactions out.
-                       , vout :: Vector TxOut
+                       , vout           :: Vector TxOut
                        -- | The hash of the block that was used for this
                        --   transaction.
                        , rawTxBlockHash :: HexString
                        -- | The transaction's block's info.
-                       , rawBlockInfo :: BlockInfo
+                       , rawBlockInfo   :: BlockInfo
                        }
     deriving ( Show, Read, Ord, Eq )
 
@@ -280,14 +280,14 @@ createRawTransaction client us tgts =
 --   hex-encoded transaction.
 data DecodedRawTransaction =
     DecodedRawTransaction { -- | The raw transaction.
-                            decRaw :: RawTransaction
+                            decRaw         :: RawTransaction
                           -- | The transaction version number.
-                          , decTxnVersion :: Integer
+                          , decTxnVersion  :: Integer
                           , decTxnLockTime :: Integer
                           -- | The vector of transactions in.
-                          , decVin :: Vector TxIn
+                          , decVin         :: Vector TxIn
                           -- | The vector of transactions out.
-                          , decVout :: Vector TxOut
+                          , decVout        :: Vector TxOut
                           }
 
 instance FromJSON DecodedRawTransaction where
@@ -328,17 +328,17 @@ data WhoCanPay = All
                | SingleOrAnyoneCanPay
 
 toString :: WhoCanPay -> Text
-toString All = "ALL"
-toString AllOrAnyoneCanPay = "ALL|ANYONECANPAY"
-toString None = "NONE"
-toString NoneOrAnyoneCanPay = "NONE|ANYONECANPAY"
-toString Single = "SINGLE"
+toString All                  = "ALL"
+toString AllOrAnyoneCanPay    = "ALL|ANYONECANPAY"
+toString None                 = "NONE"
+toString NoneOrAnyoneCanPay   = "NONE|ANYONECANPAY"
+toString Single               = "SINGLE"
 toString SingleOrAnyoneCanPay = "SINGLE|ANYONECANPAY"
 
 -- | A raw signed transaction contains the raw, signed hexstring and whether or
 --   not this transaction has a complete signature set.
 data RawSignedTransaction =
-    RawSignedTransaction { rawSigned :: HexString
+    RawSignedTransaction { rawSigned         :: HexString
                          , hasCompleteSigSet :: Bool
                          }
 

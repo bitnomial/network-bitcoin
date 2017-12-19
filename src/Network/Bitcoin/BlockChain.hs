@@ -23,11 +23,10 @@ module Network.Bitcoin.BlockChain ( Client
                                   , getOutputInfo
                                   ) where
 
-import Control.Applicative
-import Control.Monad
-import Data.Aeson
-import Network.Bitcoin.Internal
-import Network.Bitcoin.RawTransaction
+import           Control.Monad
+import           Data.Aeson
+import           Network.Bitcoin.Internal
+import           Network.Bitcoin.RawTransaction
 
 -- | Returns the number of blocks in the longest block chain.
 getBlockCount :: Client -> IO Integer
@@ -60,31 +59,31 @@ getBlockHash :: Client
 getBlockHash client idx = callApi client "getblockhash" [ tj idx ]
 
 -- | Information about a given block in the block chain.
-data Block = Block { blockHash :: BlockHash
+data Block = Block { blockHash        :: BlockHash
                    -- | The number of confirmations the block has.
                    , blkConfirmations :: Integer
                    -- | The size of the block.
-                   , blkSize :: Integer
+                   , blkSize          :: Integer
                    -- | The "height" of the block. TODO: Clarify this.
-                   , blkHeight :: Integer
+                   , blkHeight        :: Integer
                    -- | The version of the block.
-                   , blkVersion :: Integer
+                   , blkVersion       :: Integer
                    -- | The hash of the block at the root of the merkle tree
                    --   which this block belongs to.
-                   , merkleRoot :: BlockHash
+                   , merkleRoot       :: BlockHash
                    -- | Should this be a transaction, or transaction id?
-                   , subTransactions :: Vector TransactionID
+                   , subTransactions  :: Vector TransactionID
                    -- | The time it was mined.
-                   , blkTime :: Integer
+                   , blkTime          :: Integer
                    -- | The block's nonce.
-                   , blkNonce :: Integer
-                   , blkBits :: HexString
+                   , blkNonce         :: Integer
+                   , blkBits          :: HexString
                    -- | How hard was this block to mine?
-                   , blkDifficulty :: Integer
+                   , blkDifficulty    :: Integer
                    -- | A pointer to the next block in the chain.
-                   , nextBlock :: Maybe BlockHash
+                   , nextBlock        :: Maybe BlockHash
                    -- | A pointer to the previous block in the chain.
-                   , prevBlock :: Maybe BlockHash
+                   , prevBlock        :: Maybe BlockHash
                    }
     deriving ( Show, Read, Ord, Eq )
 
@@ -110,13 +109,13 @@ getBlock client bh = callApi client "getblock" [ tj bh ]
 
 -- | Information on the unspent transaction in the output set.
 data OutputSetInfo =
-    OutputSetInfo { osiBestBlock :: BlockHash
+    OutputSetInfo { osiBestBlock       :: BlockHash
                   -- | The number of transactions in the output set.
-                  , numTransactions :: Integer
+                  , numTransactions    :: Integer
                   -- | The number of outputs for the transactions.
                   , transactionOutputs :: Integer
                   -- | The serialized size of the output set.
-                  , serializedSize :: Integer
+                  , serializedSize     :: Integer
                   }
     deriving ( Show, Read, Ord, Eq )
 
@@ -133,17 +132,17 @@ getOutputSetInfo client = callApi client "gettxoutsetinfo" []
 
 -- | Details about an unspent transaction output.
 data OutputInfo =
-    OutputInfo { oiBestBlock :: BlockHash
+    OutputInfo { oiBestBlock     :: BlockHash
                -- | The number of times this transaction has been confirmed.
                , oiConfirmations :: Integer
                -- | The amount transferred.
-               , oiAmount :: BTC
+               , oiAmount        :: BTC
                -- | The public key of the sender.
-               , oiScriptPubKey :: ScriptPubKey
+               , oiScriptPubKey  :: ScriptPubKey
                -- | The version of this transaction.
-               , oiVersion :: Integer
+               , oiVersion       :: Integer
                -- | Is this transaction part of the coin base?
-               , oiCoinBase :: Bool
+               , oiCoinBase      :: Bool
                }
     deriving ( Show, Read, Ord, Eq )
 

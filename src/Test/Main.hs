@@ -3,10 +3,10 @@
 module Main where
 
 
-import Test.QuickCheck
-import Test.QuickCheck.Monadic
-import Network.Bitcoin
-import Data.Vector ( empty )
+import           Data.Vector             (empty)
+import           Network.Bitcoin
+import           Test.QuickCheck
+import           Test.QuickCheck.Monadic
 
 
 main :: IO ()

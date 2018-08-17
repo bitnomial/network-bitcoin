@@ -20,14 +20,11 @@ License-file:        LICENSE
 Author:              Michael Hendricks <michael@ndrix.org>
                      Clark Gaebel <cgaebel@uwaterloo.ca>
 Maintainer:          Clark Gaebel <cgaebel@uwaterloo.ca>
-Stability:           experimental
-Homepage:            http://github.com/wowus/network-bitcoin
-Bug-reports:         http://github.com/wowus/network-bitcoin/issues
+Homepage:            http://github.com/cgaebel/network-bitcoin
+Bug-reports:         http://github.com/cgaebel/network-bitcoin/issues
 Copyright:           2012 Michael Hendricks <michael@ndrix.org>
                      2013 Clark Gaebel <cgaebel@uwaterloo.ca>
 Stability:           experimental
-Homepage:            http://github.com/mndrix/network-bitcoin
-Bug-reports:         http://github.com/wowus/network-bitcoin/issues
 Category:            Network
 Build-type:          Simple
 Cabal-version:       >=1.8

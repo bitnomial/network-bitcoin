@@ -79,7 +79,7 @@ data Block = Block { blockHash        :: BlockHash
                    , blkNonce         :: Integer
                    , blkBits          :: HexString
                    -- | How hard was this block to mine?
-                   , blkDifficulty    :: Integer
+                   , blkDifficulty    :: Double
                    -- | A pointer to the next block in the chain.
                    , nextBlock        :: Maybe BlockHash
                    -- | A pointer to the previous block in the chain.

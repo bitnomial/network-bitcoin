@@ -29,7 +29,7 @@ import           Network.Bitcoin.Internal
 import           Network.Bitcoin.RawTransaction
 
 -- | Returns the number of blocks in the longest block chain.
-getBlockCount :: Client -> IO Integer
+getBlockCount :: Client -> IO BlockHeight
 getBlockCount client = callApi client "getblockcount" []
 
 -- | Returns the proof-of-work difficulty as a multiple of the minimum
@@ -51,10 +51,11 @@ getRawMemoryPool client = callApi client "getrawmempool" []
 
 -- | The hash of a given block.
 type BlockHash = HexString
+type BlockHeight = Integer
 
 -- | Returns the hash of the block in best-block-chain at the given index.
 getBlockHash :: Client
-             -> Integer -- ^ Block index.
+             -> BlockHeight -- ^ Block index.
              -> IO BlockHash
 getBlockHash client idx = callApi client "getblockhash" [ tj idx ]
 
@@ -65,7 +66,7 @@ data Block = Block { blockHash        :: BlockHash
                    -- | The size of the block.
                    , blkSize          :: Integer
                    -- | The "height" of the block. TODO: Clarify this.
-                   , blkHeight        :: Integer
+                   , blkHeight        :: BlockHeight
                    -- | The version of the block.
                    , blkVersion       :: Integer
                    -- | The hash of the block at the root of the merkle tree
@@ -87,6 +88,13 @@ data Block = Block { blockHash        :: BlockHash
                    }
     deriving ( Show, Read, Ord, Eq )
 
+-- Missing from data type:
+-- - strippedsize
+-- - weight
+-- - versionHex
+-- - mediantime
+-- - nTx
+-- - chainwork
 instance FromJSON Block where
     parseJSON (Object o) = Block <$> o .:  "hash"
                                  <*> o .:  "confirmations"
@@ -110,6 +118,8 @@ getBlock client bh = callApi client "getblock" [ tj bh ]
 -- | Information on the unspent transaction in the output set.
 data OutputSetInfo =
     OutputSetInfo { osiBestBlock       :: BlockHash
+                  -- | The height of the best block chain
+                  , osiHeight          :: BlockHeight
                   -- | The number of transactions in the output set.
                   , numTransactions    :: Integer
                   -- | The number of outputs for the transactions.
@@ -121,6 +131,7 @@ data OutputSetInfo =
 
 instance FromJSON OutputSetInfo where
     parseJSON (Object o) = OutputSetInfo <$> o .: "bestblock"
+                                         <*> o .: "height"
                                          <*> o .: "transactions"
                                          <*> o .: "txouts"
                                          <*> o .: "bytes_serialized"

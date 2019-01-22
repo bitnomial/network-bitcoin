@@ -11,6 +11,9 @@ module Network.Bitcoin.Net ( Client
                            , getConnectionCount
                            , PeerInfo(..)
                            , getPeerInfo
+                           , AddNodeCommand(..)
+                           , addNode
+                           , disconnectNode
                            ) where
 
 import           Control.Monad
@@ -70,3 +73,21 @@ instance FromJSON PeerInfo where
 -- | Returns data about all connected peer nodes.
 getPeerInfo :: Client -> IO [PeerInfo]
 getPeerInfo client = callApi client "getpeerinfo" []
+
+
+data AddNodeCommand = Add | Remove | OneTry
+    deriving (Show, Read, Eq)
+
+
+instance ToJSON AddNodeCommand where
+    toJSON Add    = String "add"
+    toJSON Remove = String "remove"
+    toJSON OneTry = String "onetry"
+
+
+addNode :: Client -> Text -> AddNodeCommand -> IO ()
+addNode client url com = unNil <$> callApi client "addnode" [tj url, tj com]
+
+
+disconnectNode :: Client -> Maybe Text -> Maybe Int -> IO ()
+disconnectNode client url nodeId = unNil <$> callApi client "disconnectnode" [tj url, tj nodeId]

@@ -72,7 +72,7 @@ getClient :: String
           -> BS.ByteString
           -> IO Client
 getClient url user pass = do
-    url' <- parseUrl url
+    url' <- parseUrlThrow url
     mgr <- newManager defaultManagerSettings
     let baseReq = applyBasicAuth user pass url'
             { method = "POST"

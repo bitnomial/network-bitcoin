@@ -30,6 +30,7 @@ module Network.Bitcoin
     , importPrivateKey
     , dumpPrivateKey
     -- * Mining Operations
+    , generate
     , getGenerate
     , setGenerate
     , getHashesPerSec
@@ -47,6 +48,9 @@ module Network.Bitcoin
     , getConnectionCount
     , PeerInfo(..)
     , getPeerInfo
+    , AddNodeCommand(..)
+    , addNode
+    , disconnectNode
     -- * Raw Transaction Operations
     , RawTransaction
     , getRawTransaction

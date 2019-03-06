@@ -137,6 +137,8 @@ instance FromJSON BitcoindInfo where
     parseJSON _ = mzero
 
 -- | Returns an object containing various state info.
+--
+-- /Availability:/ @< 0.16@
 getBitcoindInfo :: Client -> IO BitcoindInfo
 getBitcoindInfo client = callApi client "getinfo" []
 

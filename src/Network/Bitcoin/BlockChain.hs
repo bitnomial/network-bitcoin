@@ -171,5 +171,5 @@ instance FromJSON OutputInfo where
 getOutputInfo :: Client
               -> TransactionID
               -> Integer -- ^ The index we're looking at.
-              -> IO OutputInfo
+              -> IO (Maybe OutputInfo)
 getOutputInfo client txid n = callApi client "gettxout" [ tj txid, tj n ]

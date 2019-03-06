@@ -94,6 +94,8 @@ module Network.Bitcoin
     , moveBitcoins
     , sendFromAccount
     , sendMany
+    , EstimationMode (..)
+    , estimateSmartFee
     -- , createMultiSig
     , ReceivedByAddress(..)
     , listReceivedByAddress

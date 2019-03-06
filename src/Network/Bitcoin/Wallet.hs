@@ -35,6 +35,8 @@ module Network.Bitcoin.Wallet ( Client
                               , moveBitcoins
                               , sendFromAccount
                               , sendMany
+                              , EstimationMode (..)
+                              , estimateSmartFee
                               -- , createMultiSig
                               , ReceivedByAddress(..)
                               , listReceivedByAddress
@@ -63,14 +65,20 @@ module Network.Bitcoin.Wallet ( Client
                               , isAddressValid
                               ) where
 
+import           Control.Applicative            (liftA2)
 import           Control.Monad
 import           Data.Aeson                     as A
+import           Data.Aeson.Types               (parseEither)
+import           Data.Bifunctor                 (first)
+import           Data.Bool                      (bool)
 import qualified Data.HashMap.Lazy              as HM
+import qualified Data.List                      as List
 import           Data.Maybe
 import           Data.Text
 import           Data.Time.Clock.POSIX
 import           Data.Vector                    as V hiding ((++))
-import           Network.Bitcoin.BlockChain     (BlockHash)
+import           Data.Word
+import           Network.Bitcoin.BlockChain     (BlockHash, BlockHeight)
 import           Network.Bitcoin.Internal
 import           Network.Bitcoin.RawTransaction (RawTransaction)
 
@@ -745,3 +753,28 @@ instance FromJSON IsValid where
 -- | Checks if a given address is a valid one.
 isAddressValid :: Client -> Address -> IO Bool
 isAddressValid client addr = getValid <$> callApi client "validateaddress" [ tj addr ]
+
+
+-- | Possible fee estimation modes
+data EstimationMode
+    = Economical
+    | Conservative
+    deriving Eq
+
+
+instance ToJSON EstimationMode where
+    toJSON Economical   = toJSON ("ECONOMICAL" :: String)
+    toJSON Conservative = toJSON ("CONSERVATIVE" :: String)
+
+
+-- | Estimate the fee per kb to send a transaction
+estimateSmartFee :: Client -> Word32 -> Maybe EstimationMode -> IO (Either [String] (Double, BlockHeight))
+estimateSmartFee client target mode =
+    parse <$> callApi client "estimatesmartfee" (catMaybes [ Just $ tj target, tj <$> mode ])
+    where
+    parse = join . first pure . parseEither parseResp
+    parseResp = withObject "estimatesmartfee response" $ \obj -> do
+        merrs <- obj .:? "errors"
+        flip (maybe (parseVals obj)) merrs $ \errs ->
+            bool (pure $ Left errs) (parseVals obj) . List.null $ errs
+    parseVals = fmap Right . (liftA2 (,) <$> (.: "feerate") <*> (.: "blocks"))

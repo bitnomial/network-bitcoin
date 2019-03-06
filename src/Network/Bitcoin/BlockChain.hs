@@ -14,6 +14,7 @@ module Network.Bitcoin.BlockChain ( Client
                                   , setTransactionFee
                                   , getRawMemoryPool
                                   , BlockHash
+                                  , BlockHeight
                                   , getBlockHash
                                   , Block(..)
                                   , getBlock

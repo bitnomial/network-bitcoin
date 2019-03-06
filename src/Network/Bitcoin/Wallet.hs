@@ -531,9 +531,9 @@ listSinceBlock :: Client
                --   transaction can be returned as 'sbLastBlockHash'. This does
                --   not in any way affect which transactions are returned
                --   (see https://github.com/bitcoin/bitcoin/pull/199#issuecomment-1514952)
-               -> IO (SinceBlock)
-listSinceBlock client blockHash conf =
-    listSinceBlock' client (Just blockHash) conf
+               -> IO SinceBlock
+listSinceBlock client blockHash =
+    listSinceBlock' client (Just blockHash)
 
 -- | Gets all transactions in blocks since the given block, or all
 --   transactions if ommited.
@@ -545,7 +545,7 @@ listSinceBlock' :: Client
                 --   transaction can be returned as 'sbLastBlockHash'. This does
                 --   not in any way affect which transactions are returned
                 --   (see https://github.com/bitcoin/bitcoin/pull/199#issuecomment-1514952)
-                -> IO (SinceBlock)
+                -> IO SinceBlock
 listSinceBlock' client mblockHash mminConf =
     callApi client "listsinceblock" $ tja mblockHash ++ tja mminConf
 
@@ -677,7 +677,7 @@ instance FromJSON DetailedTransactionDetails where
 
 getTransaction :: Client
                -> TransactionID
-               -> IO (DetailedTransaction)
+               -> IO DetailedTransaction
 getTransaction client txid =
     callApi client "gettransaction" [ tj txid ]
 
@@ -736,7 +736,7 @@ encryptWallet client pass = stupidAPI <$> callApi client "encryptwallet" [ tj pa
 
 -- | Just a handy wrapper to help us get only the "isvalid" field of the JSON.
 --   The structure is much too complicated for what it needs to do.
-data IsValid = IsValid { getValid :: Bool }
+newtype IsValid = IsValid { getValid :: Bool }
 
 instance FromJSON IsValid where
     parseJSON (Object o) = IsValid <$> o .: "isvalid"

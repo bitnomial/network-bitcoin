@@ -65,13 +65,12 @@ module Network.Bitcoin.Wallet ( Client
                               , isAddressValid
                               ) where
 
+import           Control.Exception              (throw)
 import           Control.Monad
 import           Data.Aeson                     as A
 import           Data.Aeson.Types               (parseEither)
-import           Data.Bifunctor                 (first)
-import           Data.Bool                      (bool)
+import qualified Data.ByteString.Lazy.Char8     as BSL8
 import qualified Data.HashMap.Lazy              as HM
-import qualified Data.List                      as List
 import           Data.Maybe
 import           Data.Text
 import           Data.Time.Clock.POSIX
@@ -769,13 +768,9 @@ instance ToJSON EstimationMode where
 
 
 -- | Estimate the fee per kb to send a transaction
-estimateSmartFee :: Client -> Word32 -> Maybe EstimationMode -> IO (Either [String] Double)
+estimateSmartFee :: Client -> Word32 -> Maybe EstimationMode -> IO Double
 estimateSmartFee client target mode =
     parse <$> callApi client "estimatesmartfee" (catMaybes [ Just $ tj target, tj <$> mode ])
     where
-    parse = join . first pure . parseEither parseResp
-    parseResp = withObject "estimatesmartfee response" $ \obj -> do
-        merrs <- obj .:? "errors"
-        flip (maybe (parseVals obj)) merrs $ \errs ->
-            bool (pure $ Left errs) (parseVals obj) . List.null $ errs
-    parseVals = fmap Right . (.: "feerate")
+    parse = either (throw . BitcoinResultTypeError . BSL8.pack) id . parseEither parseResp
+    parseResp = withObject "estimatesmartfee response" (.: "feerate")

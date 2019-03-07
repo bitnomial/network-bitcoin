@@ -116,18 +116,18 @@ callApi client cmd params = readVal =<< client jsonRpcReqBody
 {-# INLINE callApi #-}
 
 -- | Used to allow "null" to decode to a tuple.
-data Nil = Nil { unNil :: () }
+newtype Nil = Nil { unNil :: () }
 
 instance FromJSON Nil where
     parseJSON Null = return $ Nil ()
     parseJSON x    = fail $ "\"null\" was expected, but " ++ show x ++ " was recieved."
 
 -- | Used to parse "null" or [HexString]
-data NilOrArray = NilOrArray {unArr :: Maybe [HexString]}
+newtype NilOrArray = NilOrArray {unArr :: Maybe [HexString]}
 
 instance FromJSON NilOrArray where
     parseJSON Null = return $ NilOrArray Nothing
-    parseJSON a@(Array _) = liftM NilOrArray $ parseJSON a
+    parseJSON a@(Array _) = NilOrArray <$> parseJSON a
     parseJSON x = fail $ "Expected \"null\" or array, but " ++ show x ++ " was recieved."
 
 -- | A handy shortcut for toJSON, because I'm lazy.
@@ -140,7 +140,7 @@ tjm d m = tj $ fromMaybe d m
 {-# INLINE tjm #-}
 
 tja :: ToJSON a => Maybe a -> [Value]
-tja m = fromMaybe [] $ pure . tj <$> m
+tja = maybe [] (pure . tj)
 {-# INLINE tja #-}
 
 -- | A wrapper for a vector of address:amount pairs. The RPC expects that as

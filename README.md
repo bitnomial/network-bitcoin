@@ -6,8 +6,9 @@ See the [Hackage documentation](http://hackage.haskell.org/package/network-bitco
 Testing
 ----
 
-The tests expect to run against a `bitcoind` node synced to testnet.  Invoke `bitcoind` with:
+The tests expect to run against a `bitcoind` node running in regtest mode.
+Invoke `bitcoind` with:
 
 ```shell
-$ bitcoind -rpcuser -rpcpassword -testnet
+$ bitcoind -regtest -rpcuser=bitcoinrpc -rpcpassword=bitcoinrpcpassword -rpcport=18444
 ```

@@ -66,9 +66,8 @@ Source-repository head
   location: git://github.com/bitnomial/network-bitcoin.git
 
 Test-suite network-bitcoin-tests
-  hs-source-dirs: src
-  ghc-options: -Wall
-  main-is: Test/Main.hs
+  hs-source-dirs: src/Test
+  main-is: Main.hs
   type: exitcode-stdio-1.0
   build-depends:
     aeson >= 0.8,
@@ -84,5 +83,7 @@ Test-suite network-bitcoin-tests
     base == 4.*,
     time >= 1.4.2,
     QuickCheck >= 2.6,
+    tasty >= 1.0,
+    tasty-quickcheck >= 0.10,
     http-client >= 0.4.6,
     network-bitcoin

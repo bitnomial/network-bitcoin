@@ -101,9 +101,9 @@ callApi :: FromJSON v
 callApi client cmd params = readVal =<< client jsonRpcReqBody
     where
         readVal bs = case decode' bs of
-                         Just r@(BitcoinRpcResponse {btcError=NoError})
+                         Just r@BitcoinRpcResponse {btcError=NoError}
                              -> return $ btcResult r
-                         Just (BitcoinRpcResponse {btcError=BitcoinRpcError code msg})
+                         Just BitcoinRpcResponse {btcError=BitcoinRpcError code msg}
                              -> throw $ BitcoinApiError code msg
                          Nothing
                              -> throw $ BitcoinResultTypeError bs

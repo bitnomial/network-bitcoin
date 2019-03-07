@@ -1,41 +1,47 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TupleSections       #-}
+
 
 module Main where
 
 
-import           Data.Fixed              (Fixed (MkFixed))
-import           Data.Vector             (empty)
-import qualified Data.Vector             as V
+import           Data.Either              (isRight)
+import           Data.Text                (Text)
+import           Data.Vector              (empty)
+import qualified Data.Vector              as V
 import           Network.Bitcoin
+import           Network.Bitcoin.Internal (callApi, tj)
 import           Test.QuickCheck
 import           Test.QuickCheck.Monadic
+import           Test.Tasty               (TestName, TestTree, defaultMain,
+                                           testGroup)
+import           Test.Tasty.QuickCheck
 
 
 main :: IO ()
-main = mapM_ qcOnce [ canListUnspent
-                    , canGetBlock
-                    , canGetOutputInfo
-                    , canGetRawTransaction
-                    , canGetAddress
-                    , canSendPayment
-                    , canEstimateFees
-                    ]
-
-
-qcOnce :: Property -> IO ()
-qcOnce = quickCheckWith stdArgs { maxSuccess = 1
-                                , maxSize = 1
-                                , maxDiscardRatio = 1
-                                }
+main = defaultMain . testGroup "network-bitcoin tests" $
+    [ canListUnspent
+    , canGetBlock
+    , canGetOutputInfo
+    , canGetRawTransaction
+    , canGetAddress
+    , canSendPayment
+    ]
 
 
 client :: IO Client
-client = getClient "http://127.0.0.1:18332" "bitcoinrpc" "bitcoinrpcpassword"
+client = getClient "http://127.0.0.1:18444" "bitcoinrpc" "bitcoinrpcpassword"
 
 
-canListUnspent :: Property
-canListUnspent = monadicIO $ do
-    _ <- run $ (\c -> listUnspent c Nothing Nothing Data.Vector.empty) =<< client
+nbTest name = testProperty name . once . monadicIO
+
+
+canListUnspent :: TestTree
+canListUnspent = nbTest "listUnspent" $ do
+    _ <- run $ do
+        c <- client
+        listUnspent c Nothing Nothing Data.Vector.empty
     assert True
 
 
@@ -43,51 +49,50 @@ getTopBlock :: Client -> IO Block
 getTopBlock c = getBlockCount c >>= getBlockHash c >>= getBlock c
 
 
-canGetBlock :: Property
-canGetBlock = monadicIO $ do
-    run $ client >>=
-        getTopBlock >>=
-        print
-    assert True
+canGetBlock :: TestTree
+canGetBlock = nbTest "getBlockCount / getBlockHash / getBlock" $ do
+        run $ client >>= getTopBlock
+        assert True
 
 
-canGetRawTransaction :: Property
-canGetRawTransaction = monadicIO $ do
+canGetRawTransaction :: TestTree
+canGetRawTransaction = nbTest "getRawTransactionInfo" $ do
     run $ do
         c <- client
         b <- getTopBlock c
-        getRawTransactionInfo c (subTransactions b V.! 0) >>= print
+        getRawTransactionInfo c (subTransactions b V.! 0)
     assert True
 
 
-canGetOutputInfo :: Property
-canGetOutputInfo = monadicIO $ do
+canGetOutputInfo :: TestTree
+canGetOutputInfo = nbTest "getOutputInfo" $ do
     run $ do
         c <- client
         b <- getTopBlock c
-        getOutputInfo c (subTransactions b V.! 0) 0 >>= print
+        getOutputInfo c (subTransactions b V.! 0) 0
     assert True
 
 
-canEstimateFees :: Property
-canEstimateFees = monadicIO $ do
-    run $ client >>= \c ->
-        estimateSmartFee c 10 Nothing >>= print
-    assert True
-
-
-canGetAddress :: Property
-canGetAddress = monadicIO $ do
+canGetAddress :: TestTree
+canGetAddress = nbTest "getNewAddress" $ do
     run $ do
         c <- client
-        getNewAddress c Nothing >>= print
+        getNewAddress c Nothing
     assert True
 
 
-canSendPayment :: Property
-canSendPayment = monadicIO $ do
-    run $ do
-        c <- client
+canSendPayment :: TestTree
+canSendPayment = nbTest "send payment" $ do
+    c <- run client
+    bal <- run $ getBalance c
+    amt <- pick . suchThat arbitrary $ \x -> x < bal && x > 0
+
+    (addr, recv) <- run $ do
         addr <- getNewAddress c Nothing
-        sendToAddress c addr (MkFixed 10000000) Nothing Nothing >>= print
-    assert True
+        sendToAddress c addr amt Nothing Nothing
+        _ :: [Text] <- callApi c "generate" [ tj (2 :: Int) ]
+        (addr,) <$> listReceivedByAddress c
+
+    assert . V.elem (addr, amt) . fmap f $ recv
+  where
+    f = (,) <$> recvAddress <*> recvAmount

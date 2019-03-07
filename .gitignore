@@ -6,7 +6,8 @@
 .project
 Setup.hs
 dist/
+dist-newstyle/
 cabal-dev/
-network-bitcoin-tests
 cabal.sandbox.config
 .cabal-sandbox/
+tags

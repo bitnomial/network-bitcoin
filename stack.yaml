@@ -1,4 +1,4 @@
-resolver: nightly-2017-09-06
+resolver: lts-12.5
 
 # Override default flag values for local packages and extra-deps
 flags: {}

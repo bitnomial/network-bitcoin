@@ -14,6 +14,7 @@ module Network.Bitcoin.BlockChain ( Client
                                   , setTransactionFee
                                   , getRawMemoryPool
                                   , BlockHash
+                                  , BlockHeight
                                   , getBlockHash
                                   , Block(..)
                                   , getBlock
@@ -151,7 +152,7 @@ data OutputInfo =
                -- | The public key of the sender.
                , oiScriptPubKey  :: ScriptPubKey
                -- | The version of this transaction.
-               , oiVersion       :: Integer
+               , oiVersion       :: Maybe Integer
                -- | Is this transaction part of the coin base?
                , oiCoinBase      :: Bool
                }
@@ -162,7 +163,7 @@ instance FromJSON OutputInfo where
                                       <*> o .: "confirmations"
                                       <*> o .: "value"
                                       <*> o .: "scriptPubKey"
-                                      <*> o .: "version"
+                                      <*> o .:? "version"
                                       <*> o .: "coinbase"
     parseJSON _ = mzero
 
@@ -170,5 +171,5 @@ instance FromJSON OutputInfo where
 getOutputInfo :: Client
               -> TransactionID
               -> Integer -- ^ The index we're looking at.
-              -> IO OutputInfo
+              -> IO (Maybe OutputInfo)
 getOutputInfo client txid n = callApi client "gettxout" [ tj txid, tj n ]

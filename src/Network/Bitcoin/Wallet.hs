@@ -35,6 +35,8 @@ module Network.Bitcoin.Wallet ( Client
                               , moveBitcoins
                               , sendFromAccount
                               , sendMany
+                              , EstimationMode (..)
+                              , estimateSmartFee
                               -- , createMultiSig
                               , ReceivedByAddress(..)
                               , listReceivedByAddress
@@ -63,13 +65,17 @@ module Network.Bitcoin.Wallet ( Client
                               , isAddressValid
                               ) where
 
+import           Control.Exception              (throw)
 import           Control.Monad
 import           Data.Aeson                     as A
+import           Data.Aeson.Types               (parseEither)
+import qualified Data.ByteString.Lazy.Char8     as BSL8
 import qualified Data.HashMap.Lazy              as HM
 import           Data.Maybe
 import           Data.Text
 import           Data.Time.Clock.POSIX
 import           Data.Vector                    as V hiding ((++))
+import           Data.Word
 import           Network.Bitcoin.BlockChain     (BlockHash)
 import           Network.Bitcoin.Internal
 import           Network.Bitcoin.RawTransaction (RawTransaction)
@@ -129,6 +135,8 @@ instance FromJSON BitcoindInfo where
     parseJSON _ = mzero
 
 -- | Returns an object containing various state info.
+--
+-- /Availability:/ @< 0.16@
 getBitcoindInfo :: Client -> IO BitcoindInfo
 getBitcoindInfo client = callApi client "getinfo" []
 
@@ -531,9 +539,9 @@ listSinceBlock :: Client
                --   transaction can be returned as 'sbLastBlockHash'. This does
                --   not in any way affect which transactions are returned
                --   (see https://github.com/bitcoin/bitcoin/pull/199#issuecomment-1514952)
-               -> IO (SinceBlock)
-listSinceBlock client blockHash conf =
-    listSinceBlock' client (Just blockHash) conf
+               -> IO SinceBlock
+listSinceBlock client blockHash =
+    listSinceBlock' client (Just blockHash)
 
 -- | Gets all transactions in blocks since the given block, or all
 --   transactions if ommited.
@@ -545,7 +553,7 @@ listSinceBlock' :: Client
                 --   transaction can be returned as 'sbLastBlockHash'. This does
                 --   not in any way affect which transactions are returned
                 --   (see https://github.com/bitcoin/bitcoin/pull/199#issuecomment-1514952)
-                -> IO (SinceBlock)
+                -> IO SinceBlock
 listSinceBlock' client mblockHash mminConf =
     callApi client "listsinceblock" $ tja mblockHash ++ tja mminConf
 
@@ -677,7 +685,7 @@ instance FromJSON DetailedTransactionDetails where
 
 getTransaction :: Client
                -> TransactionID
-               -> IO (DetailedTransaction)
+               -> IO DetailedTransaction
 getTransaction client txid =
     callApi client "gettransaction" [ tj txid ]
 
@@ -736,7 +744,7 @@ encryptWallet client pass = stupidAPI <$> callApi client "encryptwallet" [ tj pa
 
 -- | Just a handy wrapper to help us get only the "isvalid" field of the JSON.
 --   The structure is much too complicated for what it needs to do.
-data IsValid = IsValid { getValid :: Bool }
+newtype IsValid = IsValid { getValid :: Bool }
 
 instance FromJSON IsValid where
     parseJSON (Object o) = IsValid <$> o .: "isvalid"
@@ -745,3 +753,24 @@ instance FromJSON IsValid where
 -- | Checks if a given address is a valid one.
 isAddressValid :: Client -> Address -> IO Bool
 isAddressValid client addr = getValid <$> callApi client "validateaddress" [ tj addr ]
+
+
+-- | Possible fee estimation modes
+data EstimationMode
+    = Economical
+    | Conservative
+    deriving Eq
+
+
+instance ToJSON EstimationMode where
+    toJSON Economical   = toJSON ("ECONOMICAL" :: String)
+    toJSON Conservative = toJSON ("CONSERVATIVE" :: String)
+
+
+-- | Estimate the fee per kb to send a transaction
+estimateSmartFee :: Client -> Word32 -> Maybe EstimationMode -> IO Double
+estimateSmartFee client target mode =
+    parse <$> callApi client "estimatesmartfee" (catMaybes [ Just $ tj target, tj <$> mode ])
+    where
+    parse = either (throw . BitcoinResultTypeError . BSL8.pack) id . parseEither parseResp
+    parseResp = withObject "estimatesmartfee response" (.: "feerate")

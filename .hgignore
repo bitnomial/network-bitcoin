@@ -4,16 +4,10 @@ syntax: regexp
 \.sw[op]
 \.DS_Store$
 \.cabal-sandbox/
-\.vagrant/
 \.hpc/
 \.tix$
 cabal\.sandbox\.config$
-\.shake\.database$
-\.shake/
 dist/
 dist-newstyle/
-\.tfstate\.backup$
-\.tfstate\.blank$
-\.terraform/
 \.stack-work/
 ^tags$

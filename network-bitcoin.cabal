@@ -9,10 +9,9 @@ Description:
     > import Network.Bitcoin
     >
     > main = do
-    >    balance <- getBalance auth
+    >    client <- getClient "http://127.0.0.1:8332" "user" "password"
+    >    balance <- getBalance client
     >    putStrLn $ show balance ++ " BTC"
-    >  where
-    >    auth = Auth "http://127.0.0.1:8332" "user" "password"
     .
     To learn more about Bitcoin, see <http://www.bitcoin.org>.
 License:             BSD3
@@ -28,7 +27,7 @@ Stability:           experimental
 Category:            Network
 Build-type:          Simple
 Cabal-version:       >=1.8
-tested-with:         GHC ==7.4.1, GHC ==7.6.2, GHC ==7.6.3
+tested-with:         GHC ==8.4.3
 
 Library
   hs-source-dirs: src

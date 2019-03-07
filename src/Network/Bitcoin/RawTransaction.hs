@@ -241,9 +241,9 @@ instance FromJSON UnspentTransaction where
 
 -- Instance used in 'createRawTransaction'.
 instance ToJSON UnspentTransaction where
-    toJSON (UnspentTransaction{..}) = object [ "txid" .= unspentTransactionId
-                                             , "vout" .= outIdx
-                                             ]
+    toJSON UnspentTransaction{..} = object [ "txid" .= unspentTransactionId
+                                           , "vout" .= outIdx
+                                           ]
 
 -- | Returns an array of unspent transaction outputs with between minconf and
 --   maxconf (inclusive) confirmations. If addresses are given, the result will
@@ -306,7 +306,7 @@ decodeRawTransaction client tx = callApi client "decoderawtransaction" [ tj tx ]
 newtype UnspentForSigning = UFS UnspentTransaction
 
 instance ToJSON UnspentForSigning where
-    toJSON (UFS (UnspentTransaction{..}))
+    toJSON (UFS UnspentTransaction{..})
         | isNothing redeemScript =
             object [ "txid" .= unspentTransactionId
                    , "vout" .= outIdx

@@ -65,7 +65,6 @@ module Network.Bitcoin.Wallet ( Client
                               , isAddressValid
                               ) where
 
-import           Control.Applicative            (liftA2)
 import           Control.Monad
 import           Data.Aeson                     as A
 import           Data.Aeson.Types               (parseEither)
@@ -78,7 +77,7 @@ import           Data.Text
 import           Data.Time.Clock.POSIX
 import           Data.Vector                    as V hiding ((++))
 import           Data.Word
-import           Network.Bitcoin.BlockChain     (BlockHash, BlockHeight)
+import           Network.Bitcoin.BlockChain     (BlockHash)
 import           Network.Bitcoin.Internal
 import           Network.Bitcoin.RawTransaction (RawTransaction)
 
@@ -770,7 +769,7 @@ instance ToJSON EstimationMode where
 
 
 -- | Estimate the fee per kb to send a transaction
-estimateSmartFee :: Client -> Word32 -> Maybe EstimationMode -> IO (Either [String] (Double, BlockHeight))
+estimateSmartFee :: Client -> Word32 -> Maybe EstimationMode -> IO (Either [String] Double)
 estimateSmartFee client target mode =
     parse <$> callApi client "estimatesmartfee" (catMaybes [ Just $ tj target, tj <$> mode ])
     where
@@ -779,4 +778,4 @@ estimateSmartFee client target mode =
         merrs <- obj .:? "errors"
         flip (maybe (parseVals obj)) merrs $ \errs ->
             bool (pure $ Left errs) (parseVals obj) . List.null $ errs
-    parseVals = fmap Right . (liftA2 (,) <$> (.: "feerate") <*> (.: "blocks"))
+    parseVals = fmap Right . (.: "feerate")

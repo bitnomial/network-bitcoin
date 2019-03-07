@@ -16,3 +16,4 @@ dist-newstyle/
 \.tfstate\.blank$
 \.terraform/
 \.stack-work/
+^tags$

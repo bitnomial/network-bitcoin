@@ -770,7 +770,7 @@ instance ToJSON EstimationMode where
 -- | Estimate the fee per kb to send a transaction
 estimateSmartFee :: Client -> Word32 -> Maybe EstimationMode -> IO Double
 estimateSmartFee client target mode =
-    parse <$> callApi client "estimatesmartfee" (catMaybes [ Just $ tj target, tj <$> mode ])
+    parse =<< callApi client "estimatesmartfee" (catMaybes [ Just $ tj target, tj <$> mode ])
     where
-    parse = either (throw . BitcoinResultTypeError . BSL8.pack) id . parseEither parseResp
+    parse = either (throw . BitcoinResultTypeError . BSL8.pack) pure . parseEither parseResp
     parseResp = withObject "estimatesmartfee response" (.: "feerate")

@@ -43,7 +43,7 @@ nbTest name = testProperty name . once . monadicIO
 canGenerateBlocks :: TestTree
 canGenerateBlocks = nbTest "generateToAddress" $ do
     void . run $ do
-        c             <- client
+        c          <- client
         rewardAddr <- getNewAddress c Nothing
         M.generateToAddress c 101 rewardAddr Nothing
     assert True
@@ -100,7 +100,7 @@ canSendPayment = nbTest "send payment" $ do
     amt <- pick . suchThat arbitrary $ \x -> x < bal && x > 0
 
     (addr, recv) <- run $ do
-        addr       <- getNewAddress c Nothing
+        addr <- getNewAddress c Nothing
         sendToAddress c addr amt Nothing Nothing
         M.generate c 6 Nothing
         (addr,) <$> listReceivedByAddress c

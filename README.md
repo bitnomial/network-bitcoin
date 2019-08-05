@@ -1,7 +1,9 @@
 network-bitcoin
 ====
 
-See the [Hackage documentation](http://hackage.haskell.org/package/network-bitcoin).
+This library supports [Bitcoin Core][1] `v0.18` only.
+
+See the [Hackage documentation][2].
 
 Testing
 ----
@@ -12,3 +14,6 @@ Invoke `bitcoind` with:
 ```shell
 $ bitcoind -regtest -rpcuser=bitcoinrpc -rpcpassword=bitcoinrpcpassword -rpcport=18444
 ```
+
+[1]: https://github.com/bitcoin/bitcoin
+[2]: http://hackage.haskell.org/package/network-bitcoin

@@ -34,6 +34,7 @@ module Network.Bitcoin.Mining ( Client
 import           Control.Monad
 import           Data.Aeson               as A
 import           Network.Bitcoin.Internal
+import           Network.Bitcoin.Wallet   (getNewAddress)
 
 -- | Returns whether or not bitcoind is generating bitcoins.
 getGenerate :: Client -- ^ bitcoind RPC client
@@ -70,10 +71,8 @@ generate :: Client
          -> IO [HexString] -- ^ An array containing the block header
                            --   hashes of the generated blocks
                            --   (may be empty if used with generate 0)
-generate client blocks Nothing =
-    callApi client "generate" [ tj blocks ]
-generate client blocks (Just maxTries) =
-    callApi client "generate" [ tj blocks, tj maxTries]
+generate client blocks maxTries =
+    getNewAddress client Nothing >>= flip (generateToAddress client blocks) maxTries
 
 -- | The generatetoaddress RPC mines blocks immediately to a specified address.
 --   See https://bitcoin.org/en/developer-reference#generatetoaddress for more details.
@@ -189,8 +188,7 @@ instance FromJSON Transaction where
                                        <*> o .:  "sigops"
     parseJSON _ = mzero
 
-data CoinBaseAux = CoinBaseAux { cbFlags :: HexString
-                               }
+newtype CoinBaseAux = CoinBaseAux { cbFlags :: HexString }
     deriving ( Show, Read, Ord, Eq )
 
 instance FromJSON CoinBaseAux where
@@ -255,7 +253,7 @@ getBlockTemplate client = callApi client "getblocktemplate" []
 --   the string "rejected" on failure.
 --
 --   We use 'StupidReturnValue' to parse this ridiculous API.
-data StupidReturnValue = SRV { unStupid :: Bool }
+newtype StupidReturnValue = SRV { unStupid :: Bool }
 
 instance FromJSON StupidReturnValue where
     parseJSON Null = return $ SRV True

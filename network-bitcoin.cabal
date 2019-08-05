@@ -1,5 +1,5 @@
 Name:                network-bitcoin
-Version:             1.8.5
+Version:             1.9.0
 Synopsis:            An interface to bitcoind.
 Description:
     This can be used to send Bitcoins, query balances, etc.  It
@@ -18,7 +18,7 @@ License:             BSD3
 License-file:        LICENSE
 Author:              Michael Hendricks <michael@ndrix.org>
                      Clark Gaebel <cgaebel@uwaterloo.ca>
-Maintainer:          Matt Wraith <matt@bitnomial.com> 
+Maintainer:          Matt Wraith <matt@bitnomial.com>
 Homepage:            http://github.com/bitnomial/network-bitcoin
 Bug-reports:         http://github.com/bitnomial/network-bitcoin/issues
 Copyright:           2012 Michael Hendricks <michael@ndrix.org>

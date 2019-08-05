@@ -31,6 +31,7 @@ module Network.Bitcoin
     , dumpPrivateKey
     -- * Mining Operations
     , generate
+    , generateToAddress
     , getGenerate
     , setGenerate
     , getHashesPerSec

@@ -365,7 +365,7 @@ data ReceivedByAddress =
 
 instance FromJSON ReceivedByAddress where
     parseJSON (Object o) = ReceivedByAddress <$> o .: "address"
-                                             <*> o .: "account"
+                                             <*> o .: "label"
                                              <*> o .: "amount"
                                              <*> o .: "confirmations"
     parseJSON _ = mzero

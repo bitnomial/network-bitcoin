@@ -217,7 +217,7 @@ instance FromJSON RawTransactionInfo where
 getRawTransactionInfo :: Client -> TransactionID -> IO RawTransactionInfo
 getRawTransactionInfo client txid =
     callApi client "getrawtransaction" [ tj txid, tj verbose ]
-        where verbose = 1 :: Int
+        where verbose = True
 
 data UnspentTransaction =
     UnspentTransaction { unspentTransactionId :: TransactionID

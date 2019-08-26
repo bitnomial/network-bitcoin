@@ -39,7 +39,7 @@ import           Network.Bitcoin.Wallet   (getNewAddress)
 import           Network.HTTP.Client      (HttpException (..),
                                            HttpExceptionContent (..),
                                            responseStatus)
-import           Network.HTTP.Types       (status404)
+import           Network.HTTP.Types       (status500)
 
 -- | Returns whether or not bitcoind is generating bitcoins.
 getGenerate :: Client -- ^ bitcoind RPC client
@@ -81,7 +81,7 @@ generate client blocks maxTries =
   where
     args = tj blocks : maybe [] (pure . tj) maxTries
     onFail (HttpExceptionRequest _ (StatusCodeException rsp _))
-        | responseStatus rsp == status404
+        | responseStatus rsp == status500
         = getNewAddress client Nothing >>= flip (generateToAddress client blocks) maxTries
     onFail e = throw e
 

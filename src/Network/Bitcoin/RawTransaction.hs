@@ -51,7 +51,7 @@ type RawTransaction = HexString
 getRawTransaction :: Client -> TransactionID -> IO RawTransaction
 getRawTransaction client txid =
     callApi client "getrawtransaction" [ tj txid, tj verbose ]
-        where verbose = 0 :: Int
+        where verbose = False
 
 -- | A transaction into an account. This can either be a coinbase transaction,
 --   or a standard transaction with another account.

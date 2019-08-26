@@ -1,3 +1,7 @@
+1.9.1
+
+  * tries to call 'generate' before falling back to 'generatetoaddress'
+
 1.9.0
 
   * removes 'generate' rpc call
